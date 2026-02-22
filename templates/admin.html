@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CareBridge AI — Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{
+margin:0;
+font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+background: linear-gradient(180deg, #ffffff, #eaf3ff);
+padding: 40px 18px;
+color:#0b1220;
+}
+.wrap{ max-width:1000px; margin:0 auto; }
+header{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px; }
+a{
+text-decoration:none;
+border:1px solid rgba(15,23,42,.10);
+padding:10px 12px;
+border-radius:999px;
+background: rgba(255,255,255,.55);
+color: rgba(11,18,32,.75);
+font-weight:700;
+}
+.grid{
+display:grid;
+grid-template-columns: 1fr 1fr;
+gap: 14px;
+margin-top: 14px;
+}
+@media(max-width:800px){ .grid{ grid-template-columns:1fr; } }
+.card{
+background: rgba(255,255,255,.75);
+backdrop-filter: blur(12px);
+border: 1px solid rgba(15,23,42,.08);
+border-radius: 22px;
+box-shadow: 0 24px 60px rgba(2,6,23,.12);
+padding: 18px;
+}
+.big{
+font-weight: 900;
+font-size: 28px;
+letter-spacing:-.03em;
+margin-top: 6px;
+}
+.muted{ color: rgba(11,18,32,.62); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h2 style="margin:0;letter-spacing:-.03em;">CareBridge AI — Admin Dashboard</h2>
+<div style="display:flex;gap:10px;flex-wrap:wrap;">
+<a href="/">New case</a>
+<a href="/history">History</a>
+</div>
+</header>
+
+<div class="grid">
+<div class="card">
+<div class="muted">Total cases</div>
+<div class="big">{{ total_cases }}</div>
+</div>
+
+<div class="card">
+<div class="muted">Average risk score</div>
+<div class="big">{{ avg_risk }}%</div>
+</div>
+
+<div class="card" style="grid-column:1/-1;">
+<div class="muted">Urgency distribution</div>
+<div style="margin-top:10px;">
+<canvas id="urgencyChart" height="100"></canvas>
+</div>
+</div>
+</div>
+</div>
+
+<script id="urgencyData" type="application/json">
+{{ urgency_dict|tojson }}
+</script>
+
+<script>
+const data = JSON.parse(document.getElementById('urgencyData').textContent);
+const labels = Object.keys(data);
+const values = Object.values(data);
+
+const ctx = document.getElementById("urgencyChart");
+new Chart(ctx, {
+type: "bar",
+data: {
+labels,
+datasets: [{
+label: "Cases",
+data: values
+}]
+},
+options: {
+responsive: true,
+plugins: { legend: { display: false } },
+scales: { y: { beginAtZero: true } }
+}
+});
+</script>
+</body>
+</html>
